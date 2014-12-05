@@ -18,10 +18,9 @@ func createCloudConfigCluster() string {
 	return string(cloudConfigNew)
 }
 
-func createCloudConfigAgent() string {
+func createCloudConfigAgent(sshKey string) string {
 	println("Create Cloud Config Agent")
-	pubKey, _ := ioutil.ReadFile("~/.ssh/id_rsa.pub")
 	cloudConfig, _ := ioutil.ReadFile("cloud-config-agent.yaml")
-	cloudConfigNew := strings.Replace(string(cloudConfig), "ssh-rsa", fmt.Sprintf("ssh-rsa: %s", pubKey), -1)
+	cloudConfigNew := strings.Replace(string(cloudConfig), "ssh-rsa", sshKey, -1)
 	return string(cloudConfigNew)
 }

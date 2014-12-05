@@ -27,7 +27,9 @@ func main() {
 	login()
 
 	cloudConfigCluster = createCloudConfigCluster()
-	cloudConfigAgent = createCloudConfigAgent()
+
+	sshKey := createSshKey()
+	cloudConfigAgent = createCloudConfigAgent(sshKey)
 
 	//create coreos servers
 	var coreOSClusterDroplet *godo.DropletRoot
@@ -57,7 +59,7 @@ func main() {
 		time.Sleep(60 * time.Millisecond)
 	}
 
-	sshKey := createSshKey()
+
 	agentIp := pmxAgentDroplet.Droplet.Networks.V4[1].IPAddress
 	fleetIP := coreOSClusterDroplet.Droplet.Networks.V4[0].IPAddress
 
