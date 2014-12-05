@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 )
 
-func createSshKey() string {
+func createSshKey() (string, string) {
 
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2014)
 	if err != nil {
@@ -36,5 +36,5 @@ func createSshKey() string {
 	ioutil.WriteFile("key",[]byte(privateKeyPem), 0777)
 	ioutil.WriteFile("key.pub",[]byte(pubBytes), 0777)
 	
-	return string(pubBytes)
+	return string(privateKeyPem), string(pubBytes)
 }

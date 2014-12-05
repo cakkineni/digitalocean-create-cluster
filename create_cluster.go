@@ -28,8 +28,8 @@ func main() {
 
 	cloudConfigCluster = createCloudConfigCluster()
 
-	sshKey := createSshKey()
-	cloudConfigAgent = createCloudConfigAgent(sshKey)
+	privateKey, publicKey := createSshKey()
+	cloudConfigAgent = createCloudConfigAgent(publicKey)
 
 	//create coreos servers
 	var coreOSClusterDroplet *godo.DropletRoot
@@ -63,7 +63,7 @@ func main() {
 	agentIp := pmxAgentDroplet.Droplet.Networks.V4[1].IPAddress
 	fleetIP := coreOSClusterDroplet.Droplet.Networks.V4[0].IPAddress
 
-	setEtcdKey("agent-pri-ssh-key", sshKey)
+	setEtcdKey("agent-pri-ssh-key", privateKey)
 	setEtcdKey("agent-fleet-api", agentIp)
 	setEtcdKey("agent-public-ip", fleetIP)
 
