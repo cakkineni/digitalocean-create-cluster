@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/digitalocean/godo"
 	//"net/http"
+	"encoding/base64"
 	"os"
 	"time"
 )
@@ -66,7 +67,7 @@ func main() {
 	agentIp := pmxAgentDroplet.Droplet.Networks.V4[1].IPAddress
 	fleetIP := coreOSClusterDroplet.Droplet.Networks.V4[0].IPAddress
 
-	setEtcdKey("agent-pri-ssh-key", privateKey)
+	setEtcdKey("agent-pri-ssh-key", base64.StdEncoding.EncodeToString([]byte(privateKey)))
 	setEtcdKey("agent-fleet-api", agentIp)
 	setEtcdKey("agent-public-ip", fleetIP)
 
