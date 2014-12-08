@@ -71,6 +71,8 @@ func main() {
 	setEtcdKey("agent-public-ip", fleetIP)
 
 	fmt.Scanln()
+	time.Sleep(2000 * time.Hour)
+
 }
 
 func init() {
