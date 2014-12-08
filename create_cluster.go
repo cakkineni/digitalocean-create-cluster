@@ -4,9 +4,12 @@ import (
 	"strconv"
 	//"net/http/httputil"
 	//"flag"
+	//"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/goauth2/oauth"
+	//"crypto/tls"
 	"fmt"
 	"github.com/digitalocean/godo"
+	//"net/http"
 	"os"
 	"time"
 )
@@ -16,6 +19,7 @@ var (
 	keyName,
 	cloudConfigCluster,
 	cloudConfigAgent,
+	size,
 	apiToken string
 	serverCount int
 	doClient    *godo.Client
@@ -59,7 +63,6 @@ func main() {
 		time.Sleep(60 * time.Millisecond)
 	}
 
-
 	agentIp := pmxAgentDroplet.Droplet.Networks.V4[1].IPAddress
 	fleetIP := coreOSClusterDroplet.Droplet.Networks.V4[0].IPAddress
 
@@ -67,23 +70,17 @@ func main() {
 	setEtcdKey("agent-fleet-api", agentIp)
 	setEtcdKey("agent-public-ip", fleetIP)
 
-	logout()
-
-	//fmt.Scanln()
+	fmt.Scanln()
 }
 
 func init() {
 	serverCount, _ = strconv.Atoi(os.Getenv("NODE_COUNT"))
-	apiToken = os.Getenv("API_TOKEN")
+	apiToken = os.Getenv("DIGITALOCEAN_TOKEN")
 	location = os.Getenv("REGION")
-	keyName = os.Getenv("KEY_NAME")
+	keyName = os.Getenv("SSH_KEY_NAME")
+	size = os.Getenv("VM_SIZE")
 
-	apiToken = "a37a4ba5a6ab6a9140bc2d1950776e901db71139fa59797ddd4deba57f5feabf"
-	location = "nyc3"
-	keyName = "macbook air"
-	serverCount = 1
-
-	if apiToken == "" || serverCount == 0 || location == "" {
+	if apiToken == "" || serverCount == 0 || location == "" || keyName == "" || size == "" {
 		panic("\n\nMissing Params...Check Docs...\n\n")
 	}
 }
@@ -91,10 +88,14 @@ func init() {
 func login() {
 
 	println("\nLogging in....")
+
 	t := &oauth.Transport{
 		Token: &oauth.Token{AccessToken: apiToken},
 	}
+
 	doClient = godo.NewClient(t.Client())
+
+	//doClient = godo.NewClient(httpClient)
 
 	intIds := []int{getSshKeyId()}
 	for _, v := range intIds {
@@ -124,17 +125,13 @@ func getSshKeyId() int {
 	return keyId
 }
 
-func logout() {
-	println("\nLogging out...Not really... TBD....")
-}
-
 func createCoreOSServer(id int) *godo.DropletRoot {
 	println("Create CoreOS Server")
 	var createReq *godo.DropletCreateRequest
 	createReq = &godo.DropletCreateRequest{
 		Name:              "coreos-" + strconv.Itoa(id),
 		Region:            location,
-		Size:              "512mb",
+		Size:              size,
 		Image:             "coreos-stable",
 		PrivateNetworking: true,
 		UserData:          cloudConfigCluster,
@@ -170,11 +167,4 @@ func createServer(createRequest *godo.DropletCreateRequest) *godo.DropletRoot {
 
 func deleteServer(id int) {
 	doClient.Droplets.Delete(id)
-}
-
-func newClient(token string) *godo.Client {
-	t := &oauth.Transport{
-		Token: &oauth.Token{AccessToken: token},
-	}
-	return godo.NewClient(t.Client())
 }

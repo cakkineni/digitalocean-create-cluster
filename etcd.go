@@ -15,7 +15,11 @@ func init() {
 	if etcdIP == "" {
 		etcdIP = "172.17.42.1:4001"
 	}
+	etcdIP = fmt.Sprintf("http://%s", etcdIP)
 	machines := []string{etcdIP}
+
+	println(etcdIP)
+
 	etcdClient = etcd.NewClient(machines)
 }
 
