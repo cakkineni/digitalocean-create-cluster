@@ -68,8 +68,8 @@ func main() {
 	fleetIP := coreOSClusterDroplet.Droplet.Networks.V4[0].IPAddress
 
 	setEtcdKey("agent-pri-ssh-key", base64.StdEncoding.EncodeToString([]byte(privateKey)))
-	setEtcdKey("agent-fleet-api", agentIp)
-	setEtcdKey("agent-public-ip", fleetIP)
+	setEtcdKey("agent-fleet-api", fleetIP)
+	setEtcdKey("agent-public-ip", agentIp)
 
 	fmt.Scanln()
 	time.Sleep(2000 * time.Hour)
